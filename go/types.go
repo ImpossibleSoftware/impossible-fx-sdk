@@ -61,7 +61,7 @@ type RenderOption func(*renderOptions)
 
 type renderOptions struct {
 	Format     string
-	Parallel   int
+	Async      bool
 	RoutingKey string
 }
 
@@ -72,10 +72,10 @@ func WithFormat(format string) RenderOption {
 	}
 }
 
-// WithParallel sets the parallelism level for rendering.
-func WithParallel(n int) RenderOption {
+// WithAsync enables async rendering. Use GetProgress to poll for status.
+func WithAsync() RenderOption {
 	return func(o *renderOptions) {
-		o.Parallel = n
+		o.Async = true
 	}
 }
 
@@ -90,23 +90,7 @@ func WithRoutingKey(key string) RenderOption {
 type TokenOption func(*tokenOptions)
 
 type tokenOptions struct {
-	Format     string
-	Parallel   int
 	RoutingKey string
-}
-
-// WithTokenFormat sets the output format for token creation.
-func WithTokenFormat(format string) TokenOption {
-	return func(o *tokenOptions) {
-		o.Format = format
-	}
-}
-
-// WithTokenParallel sets the parallelism level for token creation.
-func WithTokenParallel(n int) TokenOption {
-	return func(o *tokenOptions) {
-		o.Parallel = n
-	}
 }
 
 // WithTokenRoutingKey sets the routing key for token creation.

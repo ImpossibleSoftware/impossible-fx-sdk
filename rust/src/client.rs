@@ -191,12 +191,15 @@ impl ImpossibleFX {
 
     /// Render a movie and return the result including the output URL.
     ///
+    /// Set `async_` to `Some(true)` to return immediately and poll with
+    /// [`get_progress`](Self::get_progress).
+    ///
     /// # Arguments
     ///
     /// * `project_id` - The project identifier.
     /// * `movie` - The movie template name.
     /// * `params` - Key-value render parameters.
-    /// * `options` - Optional render settings (format, parallel workers, routing key).
+    /// * `options` - Optional render settings (format, async, routing key).
     pub async fn render(
         &self,
         project_id: &str,
@@ -213,8 +216,8 @@ impl ImpossibleFX {
         if let Some(ref format) = opts.format {
             map.insert("format".to_string(), Value::String(format.clone()));
         }
-        if let Some(parallel) = opts.parallel {
-            map.insert("parallel".to_string(), Value::Number(parallel.into()));
+        if let Some(true) = opts.async_ {
+            map.insert("async".to_string(), Value::Bool(true));
         }
         if let Some(ref routing_key) = opts.routing_key {
             map.insert("routingKey".to_string(), Value::String(routing_key.clone()));
@@ -277,6 +280,8 @@ impl ImpossibleFX {
     }
 
     /// Get the current render progress for a token.
+    ///
+    /// Only available for renders started with `async_: Some(true)`.
     ///
     /// # Arguments
     ///

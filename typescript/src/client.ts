@@ -94,7 +94,7 @@ export class ImpossibleFX {
    * @param projectId - The project identifier.
    * @param movie - The movie template name.
    * @param params - Key-value render parameters.
-   * @param options - Optional render settings (format, parallel workers, routing key).
+   * @param options - Optional render settings (format, async, routing key).
    * @returns The render result with token, URL, expiration, and status.
    */
   async render(
@@ -108,7 +108,7 @@ export class ImpossibleFX {
       params,
     };
     if (options?.format) body.format = options.format;
-    if (options?.parallel) body.parallel = options.parallel;
+    if (options?.async) body.async = options.async;
     if (options?.routingKey) body.routingKey = options.routingKey;
 
     return this.request<RenderResult>('POST', `/render/${projectId}`, body);
@@ -154,6 +154,8 @@ export class ImpossibleFX {
 
   /**
    * Get the current render progress for a token.
+   *
+   * Only available for renders started with the `async` option set to `true`.
    *
    * @param token - The render token.
    * @returns Progress information with done/total counts.

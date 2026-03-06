@@ -1,6 +1,7 @@
 import io.impossible.fx.ImpossibleFX;
 import io.impossible.fx.RenderOptions;
 import io.impossible.fx.RenderResult;
+import io.impossible.fx.TokenResult;
 import io.impossible.fx.Progress;
 
 import java.util.Map;
@@ -10,42 +11,53 @@ import java.util.Map;
  */
 public class RenderExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // Create the client
         ImpossibleFX client = new ImpossibleFX.Builder()
                 .region("us-east-1")
                 .apiKey("your-api-key")
                 .build();
 
-        // Render a movie with default options
+        // Create a token for the project
+        TokenResult tokenResult = client.createToken("my-project", "intro", Map.of(
+                "title", "Hello World"
+        ));
+        System.out.println("Token: " + tokenResult.getToken());
+
+        // Synchronous render — waits for completion
         RenderResult result = client.render("my-project", "intro", Map.of(
                 "title", "Hello World",
                 "subtitle", "Rendered with Impossible FX"
-        ));
+        ), RenderOptions.builder().format("mp4").build());
 
         System.out.println("Token:   " + result.getToken());
         System.out.println("URL:     " + result.getUrl());
         System.out.println("Expires: " + result.getExpires());
         System.out.println("Status:  " + result.getStatus());
 
-        // Render with options
-        RenderOptions options = RenderOptions.builder()
-                .format("gif")
-                .parallel(4)
+        // Async render — returns immediately, poll for progress
+        RenderOptions asyncOptions = RenderOptions.builder()
+                .format("mp4")
+                .async(true)
                 .build();
 
-        RenderResult gifResult = client.render("my-project", "intro", Map.of(
-                "title", "Animated"
-        ), options);
+        RenderResult asyncResult = client.render("my-project", "intro", Map.of(
+                "title", "Async Render"
+        ), asyncOptions);
 
-        System.out.println("\nGIF URL: " + gifResult.getUrl());
+        System.out.println("\nAsync render started: " + asyncResult.getToken());
 
         // Build a URL manually from a token
-        String url = client.getUrl(result.getToken(), "mp4");
-        System.out.println("\nManual URL: " + url);
+        String url = client.getUrl(asyncResult.getToken(), "mp4");
+        System.out.println("Manual URL: " + url);
 
-        // Check render progress
-        Progress progress = client.getProgress(result.getToken());
-        System.out.println("\nProgress: " + progress.getDone() + "/" + progress.getTotal());
+        // Poll for progress (only available for async renders)
+        Progress progress = client.getProgress(asyncResult.getToken());
+        while (progress.getDone() < progress.getTotal()) {
+            System.out.println("Progress: " + progress.getDone() + "/" + progress.getTotal());
+            Thread.sleep(1000);
+            progress = client.getProgress(asyncResult.getToken());
+        }
+        System.out.println("Render finished!");
     }
 }

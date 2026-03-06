@@ -50,7 +50,8 @@ func NewClient(region string, opts ...ClientOption) *Client {
 	return c
 }
 
-// Render creates a render token and returns the result including the asset URL.
+// Render renders a movie and returns the result including the asset URL.
+// Use WithAsync to return immediately and poll with GetProgress.
 func (c *Client) Render(ctx context.Context, projectID, movie string, params map[string]any, opts ...RenderOption) (*RenderResult, error) {
 	o := &renderOptions{}
 	for _, opt := range opts {
@@ -64,8 +65,8 @@ func (c *Client) Render(ctx context.Context, projectID, movie string, params map
 	if o.Format != "" {
 		body["format"] = o.Format
 	}
-	if o.Parallel > 0 {
-		body["parallel"] = o.Parallel
+	if o.Async {
+		body["async"] = true
 	}
 	if o.RoutingKey != "" {
 		body["routingKey"] = o.RoutingKey
@@ -78,7 +79,7 @@ func (c *Client) Render(ctx context.Context, projectID, movie string, params map
 	return &result, nil
 }
 
-// CreateToken creates a render token without waiting for the render to complete.
+// CreateToken creates a render token for a project.
 func (c *Client) CreateToken(ctx context.Context, projectID, movie string, params map[string]any, opts ...TokenOption) (*TokenResult, error) {
 	o := &tokenOptions{}
 	for _, opt := range opts {
@@ -88,12 +89,6 @@ func (c *Client) CreateToken(ctx context.Context, projectID, movie string, param
 	body := map[string]any{
 		"movie":  movie,
 		"params": params,
-	}
-	if o.Format != "" {
-		body["format"] = o.Format
-	}
-	if o.Parallel > 0 {
-		body["parallel"] = o.Parallel
 	}
 	if o.RoutingKey != "" {
 		body["routingKey"] = o.RoutingKey
@@ -112,6 +107,7 @@ func (c *Client) GetURL(token, format string) string {
 }
 
 // GetProgress returns the rendering progress for the given token.
+// Only available for renders started with the WithAsync option.
 func (c *Client) GetProgress(ctx context.Context, token string) (*Progress, error) {
 	var result Progress
 	if err := c.doJSON(ctx, http.MethodGet, "/progress/"+token, nil, &result); err != nil {

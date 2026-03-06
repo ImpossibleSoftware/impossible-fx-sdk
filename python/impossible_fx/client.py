@@ -76,8 +76,8 @@ class ImpossibleFX:
         project_id: str,
         movie: str,
         params: dict[str, Any],
-        format: str = "mp4",
-        parallel: int = 1,
+        format: Optional[str] = None,
+        async_: bool = False,
         routing_key: str = "default",
     ) -> RenderResult:
         """Render a movie and return the result with a download URL.
@@ -86,23 +86,26 @@ class ImpossibleFX:
             project_id: The project identifier.
             movie: The movie name or path within the project.
             params: Render parameters (template variables, etc.).
-            format: Output format (e.g. "mp4", "gif", "png"). Defaults to "mp4".
-            parallel: Number of parallel render workers. Defaults to 1.
+            format: Output format (e.g. "mp4", "gif", "png").
+            async_: If True, return immediately and use get_progress() to poll.
             routing_key: Routing key for the render queue. Defaults to "default".
 
         Returns:
             A RenderResult containing the token, download URL, expiry, and status.
         """
+        body: dict[str, Any] = {
+            "movie": movie,
+            "params": params,
+            "routingKey": routing_key,
+        }
+        if format is not None:
+            body["format"] = format
+        if async_:
+            body["async"] = True
         data = self._request(
             "POST",
             f"/render/{project_id}",
-            json={
-                "movie": movie,
-                "params": params,
-                "format": format,
-                "parallel": parallel,
-                "routingKey": routing_key,
-            },
+            json=body,
         )
         return RenderResult(
             token=data["token"],
@@ -158,6 +161,8 @@ class ImpossibleFX:
 
     def get_progress(self, token: str) -> Progress:
         """Get the rendering progress for a token.
+
+        Only available for renders started with ``async_=True``.
 
         Args:
             token: The render token.

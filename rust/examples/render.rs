@@ -14,7 +14,13 @@ async fn main() -> impossible_fx_sdk::Result<()> {
     params.insert("title".to_string(), serde_json::json!("Hello, World!"));
     params.insert("color".to_string(), serde_json::json!("#ff0000"));
 
-    // Render a movie with custom options.
+    // Create a token for the project.
+    let token_result = client
+        .create_token("my-project", "intro", &params, None)
+        .await?;
+    println!("Token: {}", token_result.token);
+
+    // Synchronous render — waits for completion.
     let result = client
         .render(
             "my-project",
@@ -22,7 +28,6 @@ async fn main() -> impossible_fx_sdk::Result<()> {
             &params,
             Some(RenderOptions {
                 format: Some("mp4".to_string()),
-                parallel: Some(2),
                 ..Default::default()
             }),
         )
@@ -33,15 +38,25 @@ async fn main() -> impossible_fx_sdk::Result<()> {
     println!("Expires: {}", result.expires);
     println!("Status:  {}", result.status);
 
-    // You can also create a token and poll for progress.
-    let token_result = client
-        .create_token("my-project", "intro", &params, None)
+    // Async render — returns immediately, poll for progress.
+    let async_result = client
+        .render(
+            "my-project",
+            "intro",
+            &params,
+            Some(RenderOptions {
+                format: Some("mp4".to_string()),
+                async_: Some(true),
+                ..Default::default()
+            }),
+        )
         .await?;
 
-    let url = client.get_url(&token_result.token, "mp4");
-    println!("\nToken URL: {}", url);
+    let url = client.get_url(&async_result.token, "mp4");
+    println!("\nAsync URL: {}", url);
 
-    let progress = client.get_progress(&token_result.token).await?;
+    // Poll for progress (only available for async renders).
+    let progress = client.get_progress(&async_result.token).await?;
     println!("Progress: {}/{}", progress.done, progress.total);
 
     Ok(())

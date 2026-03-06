@@ -10,9 +10,9 @@ pub struct RenderOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
 
-    /// Number of parallel render workers.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parallel: Option<u32>,
+    /// If true, return immediately and use [`ImpossibleFX::get_progress`] to poll.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "async")]
+    pub async_: Option<bool>,
 
     /// Routing key for render affinity.
     #[serde(skip_serializing_if = "Option::is_none", rename = "routingKey")]

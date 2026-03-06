@@ -10,8 +10,8 @@ export interface ImpossibleFXConfig {
 export interface RenderOptions {
   /** Output format (e.g. "mp4", "gif", "png"). */
   format?: string;
-  /** Number of parallel render workers. */
-  parallel?: number;
+  /** If true, return immediately and use getProgress() to poll for status. */
+  async?: boolean;
   /** Routing key for render affinity. */
   routingKey?: string;
 }

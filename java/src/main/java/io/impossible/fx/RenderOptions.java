@@ -6,12 +6,12 @@ package io.impossible.fx;
 public class RenderOptions {
 
     private final String format;
-    private final Integer parallel;
+    private final Boolean async;
     private final String routingKey;
 
     private RenderOptions(Builder builder) {
         this.format = builder.format;
-        this.parallel = builder.parallel;
+        this.async = builder.async;
         this.routingKey = builder.routingKey;
     }
 
@@ -20,9 +20,9 @@ public class RenderOptions {
         return format;
     }
 
-    /** Number of parallel render workers. */
-    public Integer getParallel() {
-        return parallel;
+    /** If true, return immediately and use {@link ImpossibleFX#getProgress} to poll for status. */
+    public Boolean getAsync() {
+        return async;
     }
 
     /** Routing key for render affinity. */
@@ -36,7 +36,7 @@ public class RenderOptions {
 
     public static class Builder {
         private String format;
-        private Integer parallel;
+        private Boolean async;
         private String routingKey;
 
         public Builder format(String format) {
@@ -44,8 +44,8 @@ public class RenderOptions {
             return this;
         }
 
-        public Builder parallel(int parallel) {
-            this.parallel = parallel;
+        public Builder async(boolean async) {
+            this.async = async;
             return this;
         }
 

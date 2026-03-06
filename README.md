@@ -87,10 +87,10 @@ All SDKs implement the same API surface:
 
 | Method | Description |
 |--------|-------------|
-| `render(projectId, movie, params, options?)` | Render a movie and return the media URL |
-| `createToken(projectId, movie, params, options?)` | Create a render token without starting the render |
+| `createToken(projectId, movie, params, options?)` | Create a render token for a project |
+| `render(projectId, movie, params, options?)` | Render a movie and return the media URL. Optionally set `format` and `async`. |
 | `getUrl(token, format?)` | Construct the media URL for a token |
-| `getProgress(token)` | Poll render progress |
+| `getProgress(token)` | Poll render progress (only available for async renders) |
 
 ### Batch Operations
 

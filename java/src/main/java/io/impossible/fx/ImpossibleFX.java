@@ -63,7 +63,7 @@ public class ImpossibleFX {
      * @param projectId the project identifier
      * @param movie     the movie template name
      * @param params    render parameters
-     * @param options   render options (format, parallel, routingKey)
+     * @param options   render options (format, async, routingKey)
      * @return the render result
      */
     public RenderResult render(String projectId, String movie, Map<String, Object> params,
@@ -73,7 +73,7 @@ public class ImpossibleFX {
         body.put("params", params);
         if (options != null) {
             if (options.getFormat() != null) body.put("format", options.getFormat());
-            if (options.getParallel() != null) body.put("parallel", options.getParallel());
+            if (options.getAsync() != null) body.put("async", options.getAsync());
             if (options.getRoutingKey() != null) body.put("routingKey", options.getRoutingKey());
         }
         return post("/render/" + encode(projectId), body, RenderResult.class);
@@ -136,6 +136,7 @@ public class ImpossibleFX {
 
     /**
      * Returns progress information for a render in progress.
+     * Only available for renders started with {@code async(true)}.
      *
      * @param token the render token
      * @return progress information
