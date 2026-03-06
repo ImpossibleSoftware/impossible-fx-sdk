@@ -1,6 +1,6 @@
 [package]
 name = "impossible-fx-sdk"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2021"
 description = "Rust SDK for the Impossible FX v3 render API"
 license = "MIT"
