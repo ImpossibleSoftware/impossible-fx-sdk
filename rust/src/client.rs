@@ -46,7 +46,7 @@ impl ImpossibleFXBuilder {
         );
         if let Some(ref key) = self.api_key {
             let value = header::HeaderValue::from_str(&format!("Bearer {key}"))
-                .map_err(|e| Error::Http(e.into()))?;
+                .map_err(Error::InvalidHeader)?;
             headers.insert(header::AUTHORIZATION, value);
         }
 

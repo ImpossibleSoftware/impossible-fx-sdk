@@ -19,6 +19,10 @@ pub enum Error {
     /// Failed to deserialize the response body.
     #[error("Deserialization error: {0}")]
     Deserialization(#[from] serde_json::Error),
+
+    /// Invalid header value.
+    #[error("Invalid header value: {0}")]
+    InvalidHeader(#[from] reqwest::header::InvalidHeaderValue),
 }
 
 /// A `Result` alias where the error type is [`Error`].
