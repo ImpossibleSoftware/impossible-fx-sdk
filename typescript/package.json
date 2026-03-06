@@ -1,5 +1,5 @@
 {
-  "name": "@impossible/fx-sdk",
+  "name": "@impossibleio/fx-sdk",
   "version": "3.0.0",
   "description": "Impossible FX v3 SDK for Node.js",
   "main": "./dist/cjs/index.js",
