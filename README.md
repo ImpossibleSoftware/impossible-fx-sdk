@@ -7,7 +7,7 @@ Official SDK for the Impossible FX Render API. Available for TypeScript/Node.js,
 ### TypeScript / Node.js
 
 ```typescript
-import { ImpossibleFX } from '@impossibleio/fx-sdk';
+import { ImpossibleFX } from 'impossiblefx';
 
 const client = new ImpossibleFX({ region: 'us-east-1', apiKey: 'your-api-key' });
 const result = await client.render('your-project-id', 'movie-name', {
