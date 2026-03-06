@@ -12,6 +12,9 @@ dependencies = [
     "httpx>=0.24.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["impossible_fx"]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
